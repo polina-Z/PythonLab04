@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}TaskManager{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <header id="header">
+            <h1><a href="{% url 'home' %}"><i class="fas fa-home"></i>TaskManager</a></h1>
+            <nav id="nav">
+                <ul>
+                    <li><a href="{% url 'tasks' %}">Tasks</a></li>
+                    {% block user_status_change %}
+                        {% if not user_status %}
+                            <li><a href="{% url 'sign_in' %}" class="button special">Sign in</a></li>
+                        {% else %}
+                            <li><a href="{% url 'profile' %}" class="button special">{{ user_status|title }}</a></li>
+                        {% endif %}
+                    {% endblock %}
+                </ul>
+            </nav>
+        </header>
+
+        {% block content %}{% endblock %}
+
+    </body>
+</html>
