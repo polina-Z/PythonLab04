@@ -4,6 +4,7 @@ import datetime
 from taskManager.enumTasks import Priority, Status
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django import forms
 
 
 class Task(models.Model):
@@ -25,7 +26,8 @@ class Task(models.Model):
 
 
 class UserProfile(UserCreationForm):
+    email = forms.EmailField(required=True, label='Email')
+
     class Meta:
         model = User
-        fields = UserCreationForm.Meta.fields
-
+        fields = UserCreationForm.Meta.fields + ('email',)

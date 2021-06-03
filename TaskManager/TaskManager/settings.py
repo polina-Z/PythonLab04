@@ -128,11 +128,23 @@ USE_TZ = True
 STATIC_URL = 'taskManager/static/'
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = "djangotaskmanager@mail.ru"
+EMAIL_HOST_PASSWORD = "yia-diF-DTq-8vg"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'loggers': {
         'taskManager': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'root': {
             'handlers': ['file'],
             'level': 'INFO',
             'propagate': True,

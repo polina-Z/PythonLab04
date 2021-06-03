@@ -6,7 +6,7 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.utils import timezone
 from .models import Task
-from taskManager.enumTasks import Status
+from taskManager.enumTasks import Status, SendToEmail
 from django.contrib.auth.views import PasswordChangeForm
 from django.contrib.auth.models import User
 import logging
@@ -68,6 +68,7 @@ def sign_up(request):
             user = form.save()
             login(request, user)
             logger.info('Пользователь {} успешно зарегистрирован.'.format(user.username))
+            SendToEmail(user.email, user.username).start()
             return redirect('profile')
         else:
             logger.info(
@@ -76,7 +77,6 @@ def sign_up(request):
             context["form_errors"] = form.errors
     form = UserProfile()
     context["form"] = form
-    logger.warning('Произоошла ошибка регистрации.')
     return render(request, 'taskManager/sign.html', context)
 
 
