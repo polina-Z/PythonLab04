@@ -1,0 +1,4 @@
+django==3.2.3
+django-grappelli==2.15.1
+psycopg2==2.8.6
+django-enumfields==2.1.1

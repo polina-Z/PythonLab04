@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}User Tasks{% endblock %}
+{% block content %}
+<section id="main" class="wrapper">
+  <div class="container">
+    <div id="content">
+      <div class="row">
+          <div class="1u 6u(3)">
+              <h3>Tasks</h3>
+          </div>
+      </div>
+      <div class="table-wrapper">
+          <table>
+              <thead>
+              <tr>
+                  <th>Title</th>
+                  <th>Finish time</th>
+                  <th>Status</th>
+                  <th></th>
+              </tr>
+              </thead>
+              <tbody>
+            {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            {% endfor %}
+      {% for task in tasks %}
+      <tr style="color: white">
+          <td>{{ task.title }}</td>
+          <td>{{ task.finish }}</td>
+          <td>{{ task.status }}</td>
+          <td>
+              <a href="/edit/{{ task.id }}" class="button small">Edit</a>
+              <a href="/remove/{{ task.id }}" class="button small">Remove</a>
+              {% if task.status.name == 'ACTIVE' %}
+                  <a href="/finished/{{ task.id }}" class="button small">Finish</a>
+              {% endif %}
+          </td>
+      </tr>
+  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+      <div class="3u 6u(2) 12u$(3)">
+          <ul class="actions vertical">
+              <li><a href="{% url 'add_task' %}" class="button alt fit">Add task</a></li>
+          </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}TaskManager{% endblock %}
+
+{% block content %}
+    <section id="banner">
+				<h2>Task Manager</h2>
+				<ul class="actions" type="submit">
+					<li>
+						<a href="{% url 'sign_in' %}" class="button big">Sign in</a>
+					</li>
+
+                    <li>
+						<a href="{% url 'sign_up' %}" class="button big">Sign up</a>
+					</li>
+				</ul>
+    </section>
+{% endblock %}

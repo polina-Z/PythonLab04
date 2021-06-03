@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}User profile{% endblock %}
+{% load static %}
+
+{% block user_status_change %}
+    <li><a href="{% url 'logout' %}" class="button special">Sign out</a></li>
+{% endblock %}
+
+{% block content %}
+<section id="main" class="wrapper">
+    <div class="container">
+        <div id="content">
+            <div class="row">
+                <div class="1u 6u(3)">
+                    <h3>Profile</h3>
+                </div>
+                <div class="6u 12u(3)">
+                    <div class="4u 8u(2) 12u$(3)">
+                        <ul class="actions vertical">
+                            <li><a href="{% url 'password' %}" class="button alt" style="margin-left: 650px">Change password</a>
+                            <a href="{% url 'delete_user' %}" class="button alt" style="margin-left: 20px">Delete user</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h3>Profile</h3>
+            <p><span class="image right"><img width="160" height="160" src="{% static 'images/profile.png' %}" alt=""></span>
+            <h5>Username: {{ user_status }}</h5>
+            <p></p>
+            <h5>Active tasks: {{ active }}</h5>
+            <h5>Finished tasks: {{ finished }}</h5>
+            <h5>Failed tasks: {{ failed }}</h5>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
