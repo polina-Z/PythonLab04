@@ -35,10 +35,12 @@ class SendToEmail(threading.Thread):
     def run(self):
         try:
             send_mail(
-                'Добро пожаловать на сайт TaskManager',
-                'Здравствуйте {}! Благодарим вас за регистрацию на сайте TaskManager.'.format(self.username),
-                'djangotaskmanager@mail.ru',
-                ['{}'.format(self.email)],
+                "Добро пожаловать на сайт TaskManager",
+                "Здравствуйте {}! Благодарим вас за регистрацию на сайте TaskManager.".format(
+                    self.username
+                ),
+                "djangotaskmanager@mail.ru",
+                ["{}".format(self.email)],
                 fail_silently=False,
             )
         except Exception as ex:
