@@ -16,27 +16,31 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    context = {'user_status': request.user.username}
-    logger.info('Загружена начальная страница.')
-    return render(request, 'taskManager/index.html', context)
+    context = {"user_status": request.user.username}
+    logger.info("Загружена начальная страница.")
+    return render(request, "taskManager/index.html", context)
 
 
 def tasks_page(request):
-    context = {'user_status': request.user.username}
+    context = {"user_status": request.user.username}
     if request.user.is_authenticated:
-        tasks = Task.objects.filter(user_creator__exact=request.user).order_by('finish')
-        context['tasks'] = tasks
-        logger.info('Просмотр списка задач у пользователя {}.'.format(request.user.username))
-        return render(request, 'taskManager/tasks.html', context)
+        tasks = Task.objects.filter(user_creator__exact=request.user).order_by("finish")
+        context["tasks"] = tasks
+        logger.info(
+            "Просмотр списка задач у пользователя {}.".format(request.user.username)
+        )
+        return render(request, "taskManager/tasks.html", context)
     else:
-        logger.info('Страница просмотра списка задач не была загружена, так как пользователь не авторизован.')
-        return redirect('sign_in')
+        logger.info(
+            "Страница просмотра списка задач не была загружена, так как пользователь не авторизован."
+        )
+        return redirect("sign_in")
 
 
 def add_task(request):
-    context = {'user_status': request.user.username}
+    context = {"user_status": request.user.username}
     if request.user.is_authenticated:
-        if request.method == 'POST':
+        if request.method == "POST":
             form = TaskAdding(request.POST)
             if form.is_valid():
                 task = form.save(commit=False)
@@ -44,40 +48,51 @@ def add_task(request):
                 task.pub_date = timezone.now()
                 task.id = str(uuid4().hex)[-5:]
                 task.save()
-                logger.info('У пользователя {} была добавлена задача {}.'.format(request.user.username, task.title))
-                return redirect('/tasks/')
+                logger.info(
+                    "У пользователя {} была добавлена задача {}.".format(
+                        request.user.username, task.title
+                    )
+                )
+                return redirect("/tasks/")
             else:
                 logger.info(
-                    'У пользователя {} не была добавлена задача, так как форма является не корректной.'.format(
-                        request.user.username))
+                    "У пользователя {} не была добавлена задача, так как форма является не корректной.".format(
+                        request.user.username
+                    )
+                )
                 messages.error(request, "Error: Task has not been added. Try again")
                 context["form_errors"] = form.errors
         form = TaskAdding()
-        context['form'] = form
-        return render(request, 'taskManager/create_task.html', context)
+        context["form"] = form
+        return render(request, "taskManager/create_task.html", context)
     else:
-        logger.info('Страница добавления задачи не была загружена, так как пользователь не авторизован.')
-        return redirect('sign_in')
+        logger.info(
+            "Страница добавления задачи не была загружена, так как пользователь не авторизован."
+        )
+        return redirect("sign_in")
 
 
 def sign_up(request):
     context = {}
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserProfile(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            logger.info('Пользователь {} успешно зарегистрирован.'.format(user.username))
+            logger.info(
+                "Пользователь {} успешно зарегистрирован.".format(user.username)
+            )
             SendToEmail(user.email, user.username).start()
-            return redirect('profile')
+            return redirect("profile")
         else:
             logger.info(
-                'Пользователь не был зарегистрирован, так как введенные данные некорректны.')
+                "Пользователь не был зарегистрирован, так как введенные данные некорректны."
+            )
             messages.error(request, "Error: Registration error. Try again")
             context["form_errors"] = form.errors
     form = UserProfile()
     context["form"] = form
-    return render(request, 'taskManager/sign.html', context)
+    return render(request, "taskManager/sign.html", context)
 
 
 def profile(request):
@@ -93,63 +108,75 @@ def profile(request):
                 finish += 1
             if task.status == Status.FAILED:
                 failed += 1
-        context = {"user_status": request.user.username,
-                   "active": active,
-                   "finished": finish,
-                   "failed": failed
-                   }
-        logger.info(
-            'Загружен профиль пользователя {}.'.format(request.user.username))
-        return render(request, 'taskManager/profile.html', context)
+        context = {
+            "user_status": request.user.username,
+            "active": active,
+            "finished": finish,
+            "failed": failed,
+        }
+        logger.info("Загружен профиль пользователя {}.".format(request.user.username))
+        return render(request, "taskManager/profile.html", context)
     else:
-        logger.info('Страница профиля пользователя не была загружена, так как пользователь не авторизован.')
-        return redirect('sign_in')
+        logger.info(
+            "Страница профиля пользователя не была загружена, так как пользователь не авторизован."
+        )
+        return redirect("sign_in")
 
 
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
-        logger.info('Осуществлен выход пользователя {}.'.format(request.user.username))
-        return redirect('home')
+        logger.info("Осуществлен выход пользователя {}.".format(request.user.username))
+        return redirect("home")
     else:
-        logger.info('Выход пользователя не осуществлен, так как пользователь не авторизован.')
-        return redirect('sign_in')
+        logger.info(
+            "Выход пользователя не осуществлен, так как пользователь не авторизован."
+        )
+        return redirect("sign_in")
 
 
 def change_password(request):
-    context = {'user_status': request.user.username}
+    context = {"user_status": request.user.username}
     if request.user.is_authenticated:
-        if request.method == 'POST':
+        if request.method == "POST":
             form = PasswordChangeForm(request.user, request.POST)
             if form.is_valid():
                 user = form.save()
                 update_session_auth_hash(request, user)
-                logger.info('Пароль у пользователя {} успешно изменен.'.format(request.user.username))
-                return redirect('profile')
+                logger.info(
+                    "Пароль у пользователя {} успешно изменен.".format(
+                        request.user.username
+                    )
+                )
+                return redirect("profile")
             else:
                 logger.info(
-                    'Пароль у пользователя {} не был изменен, так как были указаны неверные данные.'.format(
-                        request.user.username))
-                messages.error(request, 'Password has not been updated')
+                    "Пароль у пользователя {} не был изменен, так как были указаны неверные данные.".format(
+                        request.user.username
+                    )
+                )
+                messages.error(request, "Password has not been updated")
         form = PasswordChangeForm(request.user)
         context["form"] = form
-        return render(request, 'taskManager/password_change.html', context)
+        return render(request, "taskManager/password_change.html", context)
     else:
-        logger.info('Пароль у пользователя не был изменен, так как пользователь не авторизован.')
-        return redirect('sign_in')
+        logger.info(
+            "Пароль у пользователя не был изменен, так как пользователь не авторизован."
+        )
+        return redirect("sign_in")
 
 
 def delete_user(request):
     if request.user.is_authenticated:
         user = User.objects.filter(id=request.user.id)
         if user.delete():
-            logger.info('Пользователь был успешно удален.')
-            return redirect('home')
-        logger.error('Пользователь не был удален.')
-        return redirect('profile')
+            logger.info("Пользователь был успешно удален.")
+            return redirect("home")
+        logger.error("Пользователь не был удален.")
+        return redirect("profile")
     else:
-        logger.info('Пользователь не был удален, так как пользователь не авторизован.')
-        return redirect('sign_in')
+        logger.info("Пользователь не был удален, так как пользователь не авторизован.")
+        return redirect("sign_in")
 
 
 def task_edit(request, task_id):
@@ -157,7 +184,7 @@ def task_edit(request, task_id):
         task = get_object_or_404(Task, id=task_id)
         if task is None:
             logger.warning("Задачи с id {} не существует".format(task_id))
-        if request.method == 'POST':
+        if request.method == "POST":
             form = TaskAdding(request.POST, instance=task)
             if form.is_valid():
                 task_update = form.save(commit=False)
@@ -166,43 +193,65 @@ def task_edit(request, task_id):
                 task_update.id = task.id
                 task_update.save()
                 logger.info(
-                    'У пользовател {} задача {} успешно изменена.'.format(request.user.username, task_update.title))
-                return redirect('tasks')
+                    "У пользовател {} задача {} успешно изменена.".format(
+                        request.user.username, task_update.title
+                    )
+                )
+                return redirect("tasks")
             else:
-                form = TaskAdding(initial={
-                    'title': task.title,
-                    'pub_date': task.pub_date,
-                    'finish': task.finish,
-                    'priority': task.priority,
-                    'status': task.status,
-                    'information': task.information,
-                    'user_creator': task.user_creator
-                }, instance=task)
+                form = TaskAdding(
+                    initial={
+                        "title": task.title,
+                        "pub_date": task.pub_date,
+                        "finish": task.finish,
+                        "priority": task.priority,
+                        "status": task.status,
+                        "information": task.information,
+                        "user_creator": task.user_creator,
+                    },
+                    instance=task,
+                )
                 logger.info(
-                    'У пользовател {} задача c id {} не изменена, так как переданы неверные данные.'.format(
-                        request.user.username, task_id))
-                return render(request, 'taskManager/edit.html', {
-                    "form": form,
-                    "form_errors": messages.error(request, "Error: Task has not been edit. Try again")
-                    }
+                    "У пользовател {} задача c id {} не изменена, так как переданы неверные данные.".format(
+                        request.user.username, task_id
+                    )
+                )
+                return render(
+                    request,
+                    "taskManager/edit.html",
+                    {
+                        "form": form,
+                        "form_errors": messages.error(
+                            request, "Error: Task has not been edit. Try again"
+                        ),
+                    },
                 )
         else:
-            form = TaskAdding(initial={
-                'title': task.title,
-                'pub_date': task.pub_date,
-                'finish': task.finish,
-                'priority': task.priority,
-                'status': task.status,
-                'information': task.information,
-                'user_creator': task.user_creator
-            }, instance=task)
+            form = TaskAdding(
+                initial={
+                    "title": task.title,
+                    "pub_date": task.pub_date,
+                    "finish": task.finish,
+                    "priority": task.priority,
+                    "status": task.status,
+                    "information": task.information,
+                    "user_creator": task.user_creator,
+                },
+                instance=task,
+            )
             logger.info(
-                'У пользовател {} задача c id {} не изменена, так как данные не были переданы.'.format(
-                    request.user.username, task_id))
-            return render(request, 'taskManager/edit.html', {"form": form})
+                "У пользовател {} задача c id {} не изменена, так как данные не были переданы.".format(
+                    request.user.username, task_id
+                )
+            )
+            return render(request, "taskManager/edit.html", {"form": form})
     else:
-        logger.info('Задача c id {} не была отредактирована, так как пользователь не авторизован.'.format(task_id))
-        return redirect('sign_in')
+        logger.info(
+            "Задача c id {} не была отредактирована, так как пользователь не авторизован.".format(
+                task_id
+            )
+        )
+        return redirect("sign_in")
 
 
 def remove(request, task_id):
@@ -211,26 +260,54 @@ def remove(request, task_id):
         if task is None:
             logger.warning("Задачи с id {} не существует".format(task_id))
         if task.delete():
-            logger.info('Задача c id {} успешно удалена.'.format(task_id))
-            return redirect('tasks')
+            logger.info("Задача c id {} успешно удалена.".format(task_id))
+            return redirect("tasks")
         else:
-            logger.error('Задача с id {} не была удалена.'.format(task_id))
-            return render(request, 'tasks',
-                          {"form_errors": messages.error(request, "Error: Task has not been remove. Try again")})
+            logger.error("Задача с id {} не была удалена.".format(task_id))
+            return render(
+                request,
+                "tasks",
+                {
+                    "form_errors": messages.error(
+                        request, "Error: Task has not been remove. Try again"
+                    )
+                },
+            )
     else:
-        logger.info('Задача с id {} не была удалена, так как пользователь не авторизован.'.format(task_id))
-        return redirect('sign_in')
+        logger.info(
+            "Задача с id {} не была удалена, так как пользователь не авторизован.".format(
+                task_id
+            )
+        )
+        return redirect("sign_in")
 
 
 def finished(request, task_id):
     if request.user.is_authenticated:
-        if Task.objects.filter(id=task_id).update(status=Status.FINISHED, finish=timezone.now()):
-            logger.info('Задача с id {} успешно завершена.'.format(task_id))
-            return redirect('tasks')
+        if Task.objects.filter(id=task_id).update(
+            status=Status.FINISHED, finish=timezone.now()
+        ):
+            logger.info("Задача с id {} успешно завершена.".format(task_id))
+            return redirect("tasks")
         else:
-            logger.warning('Задача с id {} не была завершена, так как возникла ошибка.'.format(task_id))
-            return render(request, 'tasks',
-                          {"form_errors": messages.error(request, "Error: Task has not been finished. Try again")})
+            logger.warning(
+                "Задача с id {} не была завершена, так как возникла ошибка.".format(
+                    task_id
+                )
+            )
+            return render(
+                request,
+                "tasks",
+                {
+                    "form_errors": messages.error(
+                        request, "Error: Task has not been finished. Try again"
+                    )
+                },
+            )
     else:
-        logger.info('Задача с id {} не была завершена, так как пользователь не авторизован.'.format(task_id))
-        return redirect('sign_in')
+        logger.info(
+            "Задача с id {} не была завершена, так как пользователь не авторизован.".format(
+                task_id
+            )
+        )
+        return redirect("sign_in")
