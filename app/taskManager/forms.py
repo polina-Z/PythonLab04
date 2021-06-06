@@ -6,8 +6,8 @@ from django import forms
 class TaskAdding(ModelForm):
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = "__all__"
         widgets = {
-            'finish': forms.DateTimeInput(attrs={'placeholder': 'YYYY-MM-DD HH:MM'}),
+            "finish": forms.DateTimeInput(attrs={"placeholder": "YYYY-MM-DD HH:MM"}),
         }
-        exclude = ['id', 'pub_date', 'user_creator']
+        exclude = ["id", "pub_date", "user_creator"]

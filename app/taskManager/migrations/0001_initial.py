@@ -17,19 +17,38 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Task',
+            name="Task",
             fields=[
-                ('id', models.CharField(max_length=16, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=100, verbose_name='Title')),
-                ('finish', models.DateTimeField(null=True)),
-                ('priority', enumfields.fields.EnumField(enum=taskManager.enumTasks.Priority, max_length=10)),
-                ('status', enumfields.fields.EnumField(enum=taskManager.enumTasks.Status, max_length=10)),
-                ('information', models.TextField(verbose_name='Information')),
-                ('user_creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.CharField(max_length=16, primary_key=True, serialize=False),
+                ),
+                ("title", models.CharField(max_length=100, verbose_name="Title")),
+                ("finish", models.DateTimeField(null=True)),
+                (
+                    "priority",
+                    enumfields.fields.EnumField(
+                        enum=taskManager.enumTasks.Priority, max_length=10
+                    ),
+                ),
+                (
+                    "status",
+                    enumfields.fields.EnumField(
+                        enum=taskManager.enumTasks.Status, max_length=10
+                    ),
+                ),
+                ("information", models.TextField(verbose_name="Information")),
+                (
+                    "user_creator",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Task',
-                'verbose_name_plural': 'Tasks',
+                "verbose_name": "Task",
+                "verbose_name_plural": "Tasks",
             },
         ),
     ]
