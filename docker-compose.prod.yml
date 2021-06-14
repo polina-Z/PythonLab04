@@ -2,9 +2,7 @@ version: '3.7'
 
 services:
   web:
-    build:
-      context: ./app
-      dockerfile: Dockerfile.prod
+    image: polinazorko/taskmanager:latest 
     command: gunicorn TaskManager.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/app/web/static
@@ -21,7 +19,7 @@ services:
     env_file:
       - ./.env.prod.db
   nginx:
-    build: ./nginx
+    image: polinazorko/taskmanager_nginx:latest
     volumes:
       - static_volume:/home/app/web/static
     ports:
